@@ -1,0 +1,18 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+// This is the dialogue class! Host all the information we need about a single dialogue. 
+//It is not monobehavior because it's not going to sit on object.
+
+
+[System.Serializable]
+public class Dialogue 
+{
+    public string speaker;
+    [TextArea(3,10)]
+    public string[] sentences;
+
+
+    
+}
