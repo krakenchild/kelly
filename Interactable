@@ -1,0 +1,58 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Interactable : MonoBehaviour
+{
+    public float triggerRadius = 3f; //how far you need to get to interact with this
+    Transform player;
+    bool interacting = false;
+    public Dialogue dialogue;
+    DialogueManager dialogueManager;
+
+    private void OnDrawGizmosSelected() //visualize the TRIGGER RANGE in the editor
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, triggerRadius);
+    }
+
+    private void Start()
+    {
+        dialogueManager = FindObjectOfType<DialogueManager>();
+    }
+    private void Update()
+    {
+        player = GameObject.Find("Momo").transform;
+        float playerDistance = Vector3.Distance(player.position, transform.position);
+        
+        if(playerDistance <= triggerRadius)
+        {
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                TriggerDialogue();
+            }
+            if (Input.GetKeyDown(KeyCode.C))
+            {
+                dialogueManager.NextSentence();
+            }
+            
+            if (!interacting)
+            {
+                Debug.Log("Now you can interact " + gameObject.name);
+                interacting = true;
+            }
+        }
+
+        if (playerDistance > triggerRadius && interacting)
+        {
+            Debug.Log("You are too far from " + gameObject.name);
+            interacting = false;
+        }
+    }
+
+    //call this function to start the dialogue
+    public void TriggerDialogue()
+    {
+        dialogueManager.StartDialogue(dialogue);
+    }
+}
