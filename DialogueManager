@@ -1,0 +1,71 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
+public class DialogueManager : MonoBehaviour
+{
+    private Queue<string> sentenceQueue;
+
+    //Connect to UI elements
+    public TextMeshProUGUI nameText;
+    public TextMeshProUGUI dialogueText;
+
+    public bool stillTyping = false;
+    Animator animator;
+
+    void Start()
+    {
+        sentenceQueue = new Queue<string>();
+        animator = GameObject.Find("Dialogue Box").GetComponent<Animator>();
+    }
+
+    public void StartDialogue(Dialogue dialogue)
+    {
+        animator.SetBool("IsOpen", true);
+        nameText.text = dialogue.speaker;
+        sentenceQueue.Clear();
+        
+        //loop the array[] and add them to the queue
+        foreach(string i in dialogue.sentences)
+        {
+            sentenceQueue.Enqueue(i);
+        }
+        NextSentence();
+    }
+
+    public void NextSentence()
+    {
+        if (sentenceQueue.Count == 0)
+        {
+            EndDialogue();
+            return;
+        }
+        string sentence = sentenceQueue.Dequeue();
+
+         StopAllCoroutines(); //if type sentence is still running
+         StartCoroutine(TypeWriter(sentence));
+
+        //dialogueText.text = sentence;  this will display the words directly, without typing out
+    }
+
+    public void EndDialogue()
+    {
+        Debug.Log("End of conversation");
+        animator.SetBool("IsOpen", false);
+    }
+
+    IEnumerator TypeWriter(string sentence)
+    {
+        stillTyping = true;
+        dialogueText.text = "";
+        foreach(char letter in sentence.ToCharArray())//convert string to character array.
+        {
+            dialogueText.text += letter; //append the letter to the string.
+            yield return new WaitForSeconds(.1f);
+                //null; //wait a single frame
+        }
+        stillTyping = false;
+    }
+}
