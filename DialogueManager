@@ -37,16 +37,16 @@ public class DialogueManager : MonoBehaviour
 
     public void NextSentence()
     {
-        if (sentenceQueue.Count == 0)
+        if(!stillTyping) //can't proceed until the coroutine is done!
         {
-            EndDialogue();
-            return;
+            if (sentenceQueue.Count == 0)
+            {
+                EndDialogue();
+                return;
+            }
+            string sentence = sentenceQueue.Dequeue();
+            StartCoroutine(TypeWriter(sentence));
         }
-        string sentence = sentenceQueue.Dequeue();
-
-         StopAllCoroutines(); //if type sentence is still running
-         StartCoroutine(TypeWriter(sentence));
-
         //dialogueText.text = sentence;  this will display the words directly, without typing out
     }
 
@@ -63,8 +63,7 @@ public class DialogueManager : MonoBehaviour
         foreach(char letter in sentence.ToCharArray())//convert string to character array.
         {
             dialogueText.text += letter; //append the letter to the string.
-            yield return new WaitForSeconds(.1f);
-                //null; //wait a single frame
+            yield return null; //wait a single frame
         }
         stillTyping = false;
     }
